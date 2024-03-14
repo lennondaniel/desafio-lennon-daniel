@@ -3,7 +3,7 @@ import { google } from 'googleapis';
 import * as credentials from '../../../credentials.json';
 import { JWT } from 'google-auth-library';
 import { ConfigService } from '@nestjs/config';
-import { PlayerData } from 'src/player/player.interface';
+import { Player } from 'src/player/player.interface';
 
 @Injectable()
 export class GoogleSheetApiService {
@@ -45,12 +45,38 @@ export class GoogleSheetApiService {
         }
     }
 
-    async updateSpreadsheet(players: PlayerData[]) {
+    formatToSpreadSheet(players: Player[]) {
+        const newArray = [];
+        const newObj = {}
+        for(const {player, statistics} of players) {
+            for(const objPla in player ){
+                if(typeof player[objPla] === 'object'){
+                  for(const subObjPla in player[objPla]) {
+                    newObj[`player.${objPla}.${subObjPla}`] = player[objPla][subObjPla];
+                  }
+                } else {
+                    newObj[`player.${objPla}`] = player[objPla];
+                }
+            }
+    
+            for(const objSta in statistics[0]) {
+                if(typeof statistics[0][objSta] === 'object') {
+                    for(const subObjSta in statistics[0][objSta]) {
+                        newObj[`statistics.${objSta}.${subObjSta}`] = statistics[0][objSta][subObjSta];
+                    }
+                } else {
+                    newObj[`statistics.${objSta}`] = statistics[0][objSta];
+                }
+            }
+            newArray.push(newObj)
+        }
+    
+        return newArray;
+    }
+
+    async updateSpreadsheet(players: Player[]) {
         try {
-            const values = players.map((object) => {
-                delete object.player.birth;
-                return object.player;
-            })
+            const values = this.formatToSpreadSheet(players);
    
             const headers = Object.keys(values[0]);
             const reqBody= {
@@ -61,7 +87,7 @@ export class GoogleSheetApiService {
             }
             await this.sheets.spreadsheets.values.update({
                 spreadsheetId: this.spreadsheetId,
-                range: 'A:J',
+                range: 'A:AAG',
                 valueInputOption: 'USER_ENTERED',
                 resource: reqBody
             });
