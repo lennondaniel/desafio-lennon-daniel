@@ -5,7 +5,7 @@ import { PlayerModel } from './player.schema';
 import { Model } from 'mongoose';
 
 describe('PlayerService', () => {
-    let service: PlayerService;
+    let playerService: PlayerService;
     let model: Model<PlayerModel>;
 
     beforeEach(async () => {
@@ -16,10 +16,10 @@ describe('PlayerService', () => {
             ],
         }).compile();
 
-        service = module.get<PlayerService>(PlayerService);
+        playerService = module.get<PlayerService>(PlayerService);
     });
 
     it('should be defined', () => {
-        expect(service).toBeDefined();
+        expect(playerService).toBeDefined();
     });
 });
