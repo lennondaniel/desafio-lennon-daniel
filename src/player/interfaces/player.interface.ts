@@ -15,14 +15,14 @@ export interface Player {
         weight: string;
         injured: boolean;
         photo: string;
-        events: number;
+        events?: number;
     };
-    statistics: {
+    statistics: [{
         team: {
             id: number;
             name: string;
             logo: string
-        };
+        },
         league: {
             id: number
             name: string;
@@ -30,7 +30,7 @@ export interface Player {
             logo: string;
             flag: string;
             season: number;
-        };
+        },
         games: {
             appearences: number;
             lineups: number;
@@ -39,50 +39,50 @@ export interface Player {
             position: string;
             rating: string;
             captain: boolean;
-        };
+        },
         substitutes: {
             in: number;
             out: number;
             bench: number;
-        };
+        },
         shots: {
             total: number;
             on: number;
-        };
+        },
         goals: {
             total: number;
             conceded: number;
             assists: number;
             saves: string;
-        };
+        },
         passes: {
             total: number;
             key: number;
             accuracy: number;
-        };
+        },
         tackles: {
             total: number;
             blocks: number;
             interceptions: number;
-        };
+        },
         duels: {
             total: number;
             won: number;
-        };
+        },
         dribbles: {
             attempts: number;
             success: number;
             past: string;
-        };
+        },
         fouls: {
             drawn: number;
             committed: number;
-        };
+        },
         cards: {
             yellow: number;
             yellowred: number;
             red: number;
-        };
+        },
         penalty: {
             won: string
             commited: string
@@ -90,5 +90,5 @@ export interface Player {
             missed: number;
             saved: string;
         };
-    }
+    }]
 }
