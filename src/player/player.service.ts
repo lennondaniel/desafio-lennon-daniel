@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { PlayerModel } from './player.schema';
 import { Model } from 'mongoose';
-import { Player, PlayerData } from './player.interface';
+import { Player } from './player.interface';
 import { FootballApiService } from 'src/external-apis/football-api/football-api.service';
 import { FootballApiResponse } from 'src/external-apis/football-api/football-api.interface';
 import { GoogleSheetApiService } from 'src/external-apis/google-sheet-api/google-sheet-api.service';
@@ -25,8 +25,8 @@ export class PlayerService {
         }
     }
 
-    async getPlayers(select: Array<string>): Promise<PlayerData[]> {
-        return await this.playerModel.find({}).select(select);
+    async getPlayers(): Promise<Player[]> {
+        return await this.playerModel.find({});
     }
 
     async formatImportedPlayers(players: Player[]): Promise<void> {
@@ -50,7 +50,7 @@ export class PlayerService {
     }
 
     async writePlayersToGoogleSheet(): Promise<void> {
-        const players = await this.getPlayers(['player']);
+        const players = await this.getPlayers();
         this.googleSheetApiService.updateSpreadsheet(players)
 
         

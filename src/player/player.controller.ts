@@ -13,7 +13,7 @@ export class PlayerController {
 
     @Get()
     async getPlaryes() {
-        return await this.playerService.getPlayers(['player', 'statistics']);
+        return await this.playerService.getPlayers();
     }
 
     @Get('write-spreadsheet')
