@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import axios, { AxiosInstance } from "axios";
+import { FootballApiResponse } from "./football-api.interface";
 
 
 @Injectable()
@@ -17,7 +18,7 @@ export class FootballApiService {
         })
     }
 
-    async getPlayers(paging = 1): Promise<any> {
+    async getPlayers(paging = 1): Promise<FootballApiResponse> {
         try {
             const response = await this.axiosInstance.get('/players', {
                 params: {
@@ -26,11 +27,9 @@ export class FootballApiService {
                     page: paging
                 }
             });
-
             return response.data;
         } catch(error: any) {
             throw new Error(error);
         }
-
     }
 }
