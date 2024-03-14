@@ -22,8 +22,8 @@ export class PlayerModel extends Document {
         photo: string;
         events: number;
     };
-    @Prop({type: Object})
-    statistics: {
+    @Prop({type: Array})
+    statistics: [{
         team: {
             id: number;
             name: string;
@@ -96,7 +96,7 @@ export class PlayerModel extends Document {
             missed: number;
             saved: string;
         };
-    }
+    }]
 }
 
 export const PlayerSchema = SchemaFactory.createForClass(PlayerModel);
