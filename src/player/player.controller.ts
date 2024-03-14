@@ -1,13 +1,23 @@
 import { Controller, Get } from '@nestjs/common';
 import { PlayerService } from './player.service';
-import { Player } from './interfaces/player.interface';
+import { Player } from './player.interface';
 
 @Controller('players')
 export class PlayerController {
     constructor(private readonly playerService: PlayerService){}
 
-    @Get()
+    @Get('import-players')
     async importPlayers(): Promise<void> {
-        this.playerService.importPlayersFromFootballApi();
+        await this.playerService.importPlayersFromFootballApi();
+    }
+
+    @Get()
+    async getPlaryes() {
+        return await this.playerService.getPlayers(['player', 'statistics']);
+    }
+
+    @Get('write-spreadsheet')
+    async writeSpreadsSheet() {
+        return await this.playerService.writePlayersToGoogleSheet();
     }
 }
