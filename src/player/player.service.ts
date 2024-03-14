@@ -10,9 +10,10 @@ export class PlayerService {
 
     async createPlayer(player: Player): Promise<Player>{
         try {
-            const newPlayer = new this.playerModel(player);
-            return await newPlayer.save();
+            const playerNew = new this.playerModel(player);
+            return await playerNew.save();
         } catch(error: any) {
+            console.log(error);
             throw new Error(error);
         }
     }
