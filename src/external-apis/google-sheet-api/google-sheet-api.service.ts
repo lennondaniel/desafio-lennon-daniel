@@ -4,7 +4,6 @@ import * as credentials from '../../../credentials.json';
 import { JWT } from 'google-auth-library';
 import { ConfigService } from '@nestjs/config';
 import { Player } from 'src/player/player.interface';
-import { flattie } from 'flattie';
 
 @Injectable()
 export class GoogleSheetApiService {
