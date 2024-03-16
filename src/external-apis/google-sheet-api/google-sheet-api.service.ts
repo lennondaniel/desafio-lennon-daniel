@@ -4,6 +4,7 @@ import * as credentials from '../../../credentials.json';
 import { JWT } from 'google-auth-library';
 import { ConfigService } from '@nestjs/config';
 import { Player } from 'src/player/player.interface';
+import { flattie } from 'flattie';
 
 @Injectable()
 export class GoogleSheetApiService {
@@ -45,44 +46,52 @@ export class GoogleSheetApiService {
         }
     }
 
-    formatToSpreadSheet(players: Player[]) {
-        const newArray = [];
-        const newObj = {}
-        for(const {player, statistics} of players) {
-            for(const objPla in player ){
-                if(typeof player[objPla] === 'object'){
-                  for(const subObjPla in player[objPla]) {
-                    newObj[`player.${objPla}.${subObjPla}`] = player[objPla][subObjPla];
-                  }
-                } else {
-                    newObj[`player.${objPla}`] = player[objPla];
+    flattenObject(obj, prefix = "") {
+        return Object.entries(obj).reduce((acc, [key, value]) => {
+            value = value ?? '';
+            const newPrefix = prefix ? `${prefix}.${key}` : key;
+            if (typeof value === 'object' && !Array.isArray(value)) {
+                return Object.assign({}, acc, this.flattenObject(value, newPrefix));
+            } else {
+                if (key === 'statistics' && Array.isArray(value)) {
+                    return Object.assign({}, acc, ...value.map((statistic) =>  {
+                        this.replaceNullValues(statistic);
+                        return this.flattenObject(statistic, newPrefix);
+                    }));
                 }
-            }
     
-            for(const objSta in statistics[0]) {
-                if(typeof statistics[0][objSta] === 'object') {
-                    for(const subObjSta in statistics[0][objSta]) {
-                        newObj[`statistics.${objSta}.${subObjSta}`] = statistics[0][objSta][subObjSta];
-                    }
-                } else {
-                    newObj[`statistics.${objSta}`] = statistics[0][objSta];
-                }
+                acc[newPrefix] = value;
+                return acc;
             }
-            newArray.push(newObj)
-        }
-    
-        return newArray;
+        }, {});
+    }
+      
+    replaceNullValues(obj) {
+        Object.entries(obj).forEach(([key, value]) => {
+          if (value === null) {
+            obj[key] = '';
+          } else if (typeof value === "object") {
+            this.replaceNullValues(value);
+          }
+        });
     }
 
     async updateSpreadsheet(players: Player[]) {
         try {
-            const values = this.formatToSpreadSheet(players);
-   
-            const headers = Object.keys(values[0]);
+            const data = [...players.map((item) => {
+                return {
+                    player: item.player,
+                    statistics: item.statistics
+                }
+            })];
+
+            const flattenedArray = data.map(item => this.flattenObject(item));
+
+            const headers = Object.keys(flattenedArray);
             const reqBody= {
                 values: [
                     headers,
-                    ...values.map((object) => Object.values(object))
+                    ...flattenedArray.map((object) => Object.values(object))
                 ]
             }
             await this.sheets.spreadsheets.values.update({
